@@ -1,0 +1,12 @@
+{
+  "allure": {
+    "directory": "allure-results",
+    "title": "Selenium C# UI Tests — OrangeHRM",
+    "links": [
+      {
+        "type": "issue",
+        "urlTemplate": "https://github.com/issues/{}"
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+bin/
+obj/
+*.user
+.vs/
+allure-results/
+allure-report/
+TestResults/
+.env
+*.suo
+.idea/
+*.DotSettings.user

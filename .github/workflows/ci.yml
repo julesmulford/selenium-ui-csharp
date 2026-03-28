@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-verify:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore selenium-ui-csharp.sln
+
+      - name: Build
+        run: dotnet build selenium-ui-csharp.sln --configuration Release --no-restore
+
+  smoke-tests:
+    name: Smoke Tests
+    runs-on: ubuntu-latest
+    needs: build-verify
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore selenium-ui-csharp.sln
+
+      - name: Run Smoke Tests
+        run: |
+          dotnet test selenium-ui-csharp.sln \
+            --filter "Category=smoke" \
+            --configuration Release \
+            --no-restore \
+            --logger "trx;LogFileName=smoke-results.trx" \
+            --results-directory TestResults
+        env:
+          APP_BASE_URL: https://opensource-demo.orangehrmlive.com
+          BROWSER_HEADLESS: "true"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-allure-results
+          path: src/SeleniumUI.Tests/allure-results/
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: smoke-trx-results
+          path: TestResults/**/*.trx
+
+  regression-tests:
+    name: Regression Tests
+    runs-on: ubuntu-latest
+    needs: smoke-tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore selenium-ui-csharp.sln
+
+      - name: Run Regression Tests
+        run: |
+          dotnet test selenium-ui-csharp.sln \
+            --filter "Category=regression" \
+            --configuration Release \
+            --no-restore \
+            --logger "trx;LogFileName=regression-results.trx" \
+            --results-directory TestResults
+        env:
+          APP_BASE_URL: https://opensource-demo.orangehrmlive.com
+          BROWSER_HEADLESS: "true"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: regression-allure-results
+          path: src/SeleniumUI.Tests/allure-results/
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: regression-trx-results
+          path: TestResults/**/*.trx
