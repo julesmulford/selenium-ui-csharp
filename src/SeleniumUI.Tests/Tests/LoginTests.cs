@@ -1,3 +1,4 @@
+using Allure.Net.Commons;
 using Allure.NUnit.Attributes;
 using NUnit.Framework;
 using SeleniumUI.Tests.Data;
