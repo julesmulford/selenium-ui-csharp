@@ -1,6 +1,6 @@
 # selenium-ui-csharp
 
-Enterprise-grade Selenium 4 + .NET 8 + NUnit UI test framework for [OrangeHRM Demo](https://opensource-demo.orangehrmlive.com).
+Selenium 4 + .NET 8 + NUnit UI test framework for [OrangeHRM Demo](https://opensource-demo.orangehrmlive.com).
 
 ## Tech Stack
 
